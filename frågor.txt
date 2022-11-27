@@ -1,0 +1,23 @@
+-När använder man add respektive commit?
+
+Kommandot add använder man när man skapat eller modifierat en fil i sin
+git-repository. Det lägger till filen eller filerna i staging area.
+
+Kommandot commit tar allting från staging area och skapar ett snapshot av det.
+Den sparar en version av git-repositoryt och ger versionen ett unikt ID.
+
+-Vad är pull respektive push?
+
+Pull hämtar innehåll från en remote repository till den lokala repositoryn.
+Push laddar upp innehåll från den lokala repositoryn till en remote.
+
+-När använder man log respektive status?
+
+Man använder kommandot log för att se alla tidigare commits i git-repositoryt.
+Kommandot status visar om man har filer som inte är inlagda i staging area eller
+som inte är commitade i det lokala repositoryt.
+
+-Förklara och motivera de olika sätten man kan rulla tillbaka koden till
+ett tidigare tillstånd:
+
+
