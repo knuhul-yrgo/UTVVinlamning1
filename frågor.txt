@@ -1,4 +1,4 @@
--När använder man add respektive commit?
+---När använder man add respektive commit?
 
 Kommandot add använder man när man skapat eller modifierat en fil i sin
 git-repository. Det lägger till filen eller filerna i staging area.
@@ -6,18 +6,131 @@ git-repository. Det lägger till filen eller filerna i staging area.
 Kommandot commit tar allting från staging area och skapar ett snapshot av det.
 Den sparar en version av git-repositoryt och ger versionen ett unikt ID.
 
--Vad är pull respektive push?
+---Vad är pull respektive push?
 
 Pull hämtar innehåll från en remote repository till den lokala repositoryn.
 Push laddar upp innehåll från den lokala repositoryn till en remote.
 
--När använder man log respektive status?
+---När använder man log respektive status?
 
 Man använder kommandot log för att se alla tidigare commits i git-repositoryt.
 Kommandot status visar om man har filer som inte är inlagda i staging area eller
 som inte är commitade i det lokala repositoryt.
 
--Förklara och motivera de olika sätten man kan rulla tillbaka koden till
+---Förklara och motivera de olika sätten man kan rulla tillbaka koden till
 ett tidigare tillstånd:
 
 
+Det finns tre sätt att rulla tillbaka koden till ett tidigare tillstånd:
+
+git checkout - det här kommandot förflyttar HEAD till ett tidigare commit. 
+Det skapar ingen ny branch och det tar inte bort några commits. 
+Kommandot checkout fungerar bra för att kolla på en tidigare version av ens projekt.
+
+ex:
+knutbsh@under-ekarna:~/guessingGame$ git log --oneline
+aeaa6ae (HEAD -> undoing-commits, main) write questions and anwsers in txt file
+e59d8db (origin/main) make script that runs game
+3b6e433 add code to getReply-method
+29dd3b7 add code to start-method
+71dd6fc adding main class
+e2a7e80 adds a constructor
+361ff11 add Guesser
+288713e add list of files to .gitignore
+knutbsh@under-ekarna:~/guessingGame$ git checkout 71dd6fc
+Note: switching to '71dd6fc'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by switching back to a branch.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -c with the switch command. Example:
+
+  git switch -c <new-branch-name>
+
+Or undo this operation with:
+
+  git switch -
+
+Turn off this advice by setting config variable advice.detachedHead to false
+
+HEAD is now at 71dd6fc adding main class
+knutbsh@under-ekarna:~/guessingGame$ git log --oneline
+71dd6fc (HEAD) adding main class
+e2a7e80 adds a constructor
+361ff11 add Guesser
+288713e add list of files to .gitignore
+knutbsh@under-ekarna:~/guessingGame$ git checkout -
+Previous HEAD position was 71dd6fc adding main class
+Switched to branch 'undoing-commits'
+
+
+git revert - det här kommadot skapar en ny commit som inverterar
+en tidigare commit. På så vis skapar det en ny commit som påminner om ett 
+tidigare tillstånd i projektet. Kommandot revert lämpar sig för ett public 
+projekt, där man inte vill permanent radera andras ändringar.
+
+ex:
+knutbsh@under-ekarna:~/guessingGame$ git log --oneline
+aeaa6ae (HEAD -> undoing-commits, main) write questions and anwsers in txt file
+e59d8db (origin/main) make script that runs game
+3b6e433 add code to getReply-method
+29dd3b7 add code to start-method
+71dd6fc adding main class
+e2a7e80 adds a constructor
+361ff11 add Guesser
+288713e add list of files to .gitignore
+knutbsh@under-ekarna:~/guessingGame$ git revert HEAD~3
+Auto-merging Guesser.java
+[undoing-commits 1ae4807] Revert "add code to start-method"
+ 1 file changed, 2 deletions(-)
+knutbsh@under-ekarna:~/guessingGame$ git log --oneline
+1ae4807 (HEAD -> undoing-commits) Revert "add code to start-method"
+aeaa6ae (main) write questions and anwsers in txt file
+e59d8db (origin/main) make script that runs game
+3b6e433 add code to getReply-method
+29dd3b7 add code to start-method
+71dd6fc adding main class
+e2a7e80 adds a constructor
+361ff11 add Guesser
+288713e add list of files to .gitignore
+
+
+git reset - det här kommandot förflyttar projektet till ett tidigare commit.
+Kör man git reset utan något argument kommer det uppdatera snapshotet över 
+staging area, men det kommer inte ändra working directory. Använder man 
+argumentet –hard kommer även working directory uppdateras och de commits 
+man har rullat tillbaka kommer försvinna permanent.
+
+ex:
+knutbsh@under-ekarna:~/guessingGame$ touch jidjifj.txt
+knutbsh@under-ekarna:~/guessingGame$ ls
+Guesser.class  GuessingGame.class  frågor.txt   run_game.sh
+Guesser.java   GuessingGame.java   jidjifj.txt
+knutbsh@under-ekarna:~/guessingGame$ git add jidjifj.txt
+knutbsh@under-ekarna:~/guessingGame$ git commit -m "stupid mistake"
+[undoing-commits f6285e2] stupid mistake
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 jidjifj.txt
+knutbsh@under-ekarna:~/guessingGame$ git reset HEAD~1 #reset without argument, the same as reset –mixed
+knutbsh@under-ekarna:~/guessingGame$ git status
+On branch undoing-commits
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        jidjifj.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+knutbsh@under-ekarna:~/guessingGame$ touch jidjifj.txt
+knutbsh@under-ekarna:~/guessingGame$ git add jidjifj.txt
+knutbsh@under-ekarna:~/guessingGame$ git commit -m "stupid mistake again"
+[undoing-commits 136ec45] stupid mistake again
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 jidjifj.txt
+knutbsh@under-ekarna:~/guessingGame$ git reset --hard HEAD~1 #reset with –hard
+HEAD is now at aeaa6ae write questions and anwsers in txt file
+knutbsh@under-ekarna:~/guessingGame$ git status
+On branch undoing-commits
+nothing to commit, working tree clean
+knutbsh@under-ekarna:~/guessingGame$
